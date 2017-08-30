@@ -1,0 +1,17 @@
+{
+  "manifest_version": 2,
+
+  "name": "Github PR Box",
+  "description": "Sane workflow management for GitHub PRs",
+  "version": "1.0",
+
+  "browser_action": {
+    "default_icon": "./icons/icon.png",
+    "default_popup": "popup.html"
+  },
+
+  "permissions": [
+    "https://api.github.com/",
+    "notifications"
+  ]
+}
