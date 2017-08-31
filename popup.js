@@ -8,8 +8,7 @@ function renderStatus(statusText) {
 
 var gitLogin = 'bennidhamma'
 var githubOrg = 'themaven-net'
-//#var accessToken = '4b59f60f56a39ed04f27a948458e611cfb38c6ff'
-var accessToken = 'f23061ca32a7623b97ee8ed8cc19647a160f755d'
+var accessToken = '5c9e713d414e0f1a9b7d469b945ef73fd794f751'
 var api = url => `https://api.github.com/${url}`
 var call = (url, qs) => fetch(`${url}?access_token=${accessToken}${qs ? '&' + qs : ''}`)
   .then(r => r.json())
@@ -29,7 +28,9 @@ var data = {
 
 var renderPull = pull => `<div class="pr">
   <header>${pull.title}</header>
-  <a href="${pull.url}">${pull.url}</a>
+  <a href="${pull.html_url}">
+    ${pull.html_url}
+  </a>
 </div>`
 
 var render = () => {
@@ -41,7 +42,7 @@ var render = () => {
   outbox.innerHTML = outboxHTML
 }
 
-var mostRecentPtal = comments => comments.find(c => c.body.toLower().includes('ptal'))
+var mostRecentPtal = comments => comments.find(c => c.body.toLowerCase().includes('ptal'))
 
 var routePull = pull => {
   if (pull.user.login === gitLogin) {
@@ -74,10 +75,15 @@ document.addEventListener('DOMContentLoaded', function() {
     for (let repo of repos) {
       data.repos.push(repo)
       getPulls(repo.name).then(pulls => {
-        console.log('pulls: ', pulls)
         repo.pulls = pulls
         pulls.forEach(routePull)
       })
     }
   })
 });
+
+document.addEventListener('click', e => {
+  if (e.target.localName === 'a') {
+    chrome.tabs.create({url: e.target.href})
+  }
+})

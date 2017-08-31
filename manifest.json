@@ -12,6 +12,7 @@
 
   "permissions": [
     "https://api.github.com/",
-    "notifications"
+    "notifications",
+    "tabs"
   ]
 }
