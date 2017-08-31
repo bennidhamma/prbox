@@ -10,9 +10,12 @@
     "default_popup": "popup.html"
   },
 
+  "options_page": "options.html",
+
   "permissions": [
     "https://api.github.com/",
     "notifications",
-    "tabs"
+    "tabs",
+    "storage"
   ]
 }

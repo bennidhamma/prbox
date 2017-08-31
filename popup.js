@@ -1,54 +1,50 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 function renderStatus(statusText) {
   document.getElementById('status').textContent = statusText
 }
 
-var gitLogin = 'bennidhamma'
-var githubOrg = 'themaven-net'
-var accessToken = '5c9e713d414e0f1a9b7d469b945ef73fd794f751'
-var api = url => `https://api.github.com/${url}`
-var call = (url, qs) => fetch(`${url}?access_token=${accessToken}${qs ? '&' + qs : ''}`)
+let accessToken = ''
+let gitLogin = ''
+let githubOrg = ''
+const api = url => `https://api.github.com/${url}`
+const call = (url, qs) => fetch(`${url}?access_token=${accessToken}${qs ? '&' + qs : ''}`)
   .then(r => r.json())
 
-var getRepos = () => call(api(`orgs/${githubOrg}/repos`))
+const getRepos = () => call(api(`orgs/${githubOrg}/repos`))
 
-var getPulls = repoName => call(api(`repos/${githubOrg}/${repoName}/pulls`))
+const getPulls = repoName => call(api(`repos/${githubOrg}/${repoName}/pulls`))
 
-var getComments = pull => call(`${pull.review_comments_url}`,
+const getComments = pull => call(`${pull.review_comments_url}`,
   'per_page=50&sort=created&direction=desc')
 
-var data = {
+const data = {
   repos: [],
   inbox: [],
   outbox: [],
 }
 
-var renderPull = pull => `<div class="pr">
+const renderPull = pull => `<div class="pr">
   <header>${pull.title}</header>
   <a href="${pull.html_url}">
     ${pull.html_url}
   </a>
 </div>`
 
-var render = () => {
-  var inbox = document.getElementById('inbox')
-  var outbox = document.getElementById('outbox')
-  var inboxHTML = '<h1>Inbox</h1>' + data.inbox.map(renderPull).join('\n')
-  var outboxHTML = '<h1>Outbox</h1>' + data.outbox.map(renderPull).join('\n')
+const render = () => {
+  const inbox = document.getElementById('inbox')
+  const outbox = document.getElementById('outbox')
+  const inboxHTML = '<h1>Inbox</h1>' + data.inbox.map(renderPull).join('\n')
+  const outboxHTML = '<h1>Outbox</h1>' + data.outbox.map(renderPull).join('\n')
   inbox.innerHTML = inboxHTML
   outbox.innerHTML = outboxHTML
 }
 
-var mostRecentPtal = comments => comments.find(c => c.body.toLowerCase().includes('ptal'))
+const mostRecentPtal = comments => comments.find(c => c.body.toLowerCase().includes('ptal'))
 
-var routePull = pull => {
+const routePull = pull => {
   if (pull.user.login === gitLogin) {
     // I started this PR.
     getComments(pull).then(comments => {
-      var ptal = mostRecentPtal(comments)
+      const ptal = mostRecentPtal(comments)
       if (!ptal || ptal.user.login === gitLogin) {
         data.outbox.push(pull)
       } else {
@@ -59,7 +55,7 @@ var routePull = pull => {
   } else if (pull.requested_reviewers.some(r => r.login === gitLogin)) {
     // I am a reviewer on this PR.
     getComments(pull).then(comments => {
-      var ptal = mostRecentPtal(comments)
+      let ptal = mostRecentPtal(comments)
       if (!ptal || ptal.user.login !== gitLogin) {
         data.inbox.push(pull)
       } else {
@@ -71,16 +67,25 @@ var routePull = pull => {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  getRepos().then(repos => {
-    for (let repo of repos) {
-      data.repos.push(repo)
-      getPulls(repo.name).then(pulls => {
-        repo.pulls = pulls
-        pulls.forEach(routePull)
-      })
-    }
+  chrome.storage.sync.get({
+    login: '',
+    accessToken: '',
+    githubOrg: ''
+  }, function(config) {
+    accessToken = config.accessToken
+    gitLogin = config.login
+    githubOrg = config.githubOrg
+    getRepos().then(repos => {
+      for (let repo of repos) {
+        data.repos.push(repo)
+        getPulls(repo.name).then(pulls => {
+          repo.pulls = pulls
+          pulls.forEach(routePull)
+        })
+      }
+    })
   })
-});
+})
 
 document.addEventListener('click', e => {
   if (e.target.localName === 'a') {
