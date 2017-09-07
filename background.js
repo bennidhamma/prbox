@@ -66,7 +66,7 @@ const routePull = pull => {
         .sort((a, b) => new Date(a.submitted_at || a.updated_at) >
           new Date(b.submitted_at || b.updated_at))
       console.log(pull.url, 'entries', entries)
-      let myBall = false, theirBall = false
+      let myBall = false, theirBall = isMyPull
       let currentState = OPEN
       let iAmOnPull = false
       for(const entry of entries) {
