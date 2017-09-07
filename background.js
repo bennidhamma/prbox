@@ -71,6 +71,7 @@ const routePull = pull => {
       let iAmOnPull = false
       for(const entry of entries) {
         const isMyEntry = entry.user.login === gitLogin
+        const authorOwnsPull = entry.user.login === pull.user.login
         if (entry.state === CHANGES_REQUESTED) {
           iAmOnPull |= isMyEntry
           myBall = isMyPull
@@ -81,10 +82,15 @@ const routePull = pull => {
           myBall = isMyPull
           theirBall = isMyEntry
           currentState = APPROVED
-        } else if (entry.body.toLowerCase() === 'ptal') {
+        } else if (entry.body.toLowerCase().includes('ptal')) {
           iAmOnPull |= isMyEntry
-          myBall = iAmOnPull && !isMyEntry
+          myBall = (iAmOnPull && !isMyEntry && (isMyPull || authorOwnsPull)) ||
+            entry.body.toLowerCase().includes(gitLogin)
           theirBall = isMyEntry
+        } else if (entry.body.toLowerCase().includes('lgtm')) {
+          iAmOnPull |= isMyEntry
+          myBall = isMyPull && !isMyEntry
+          theirBall = !isMyPull && isMyEntry
         }
       }
       if (myBall) {
