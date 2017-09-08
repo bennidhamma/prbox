@@ -95,11 +95,10 @@ const routePull = pull => {
       }
       if (myBall) {
         data.inbox.push(pull)
-        update()
       } else if (theirBall) {
         data.outbox.push(pull)
-        update()
       }
+      update()
     })
   })
 }
@@ -107,7 +106,7 @@ const routePull = pull => {
 const update = () => {
   chrome.storage.local.set({ data })
   if (chrome.browserAction) {
-    chrome.browserAction.setBadgeText({text: data.inbox.length ? '' + data.inbox.length : null})
+    chrome.browserAction.setBadgeText({text: data.inbox.length ? '' + data.inbox.length : ''})
   }
   chrome.runtime.sendMessage({cmd: 'render', data})
 }
