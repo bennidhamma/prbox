@@ -76,6 +76,8 @@ const routePull = pull => {
           iAmOnPull |= isMyEntry
           if (isMyPull) {
             myBall = true
+          } else if (isMyEntry) {
+            myBall = false
           }
           theirBall = isMyEntry
           currentState = CHANGES_REQUESTED
