@@ -74,7 +74,9 @@ const routePull = pull => {
         const authorOwnsPull = entry.user.login === pull.user.login
         if (entry.state === CHANGES_REQUESTED) {
           iAmOnPull |= isMyEntry
-          myBall = isMyPull
+          if (isMyPull) {
+            myBall = true
+          }
           theirBall = isMyEntry
           currentState = CHANGES_REQUESTED
         } else if (entry.state === APPROVED) {
