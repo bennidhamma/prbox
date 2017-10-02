@@ -69,7 +69,14 @@ const routePull = pull => {
       let myBall = false, theirBall = isMyPull
       let currentState = OPEN
       let iAmOnPull = false
-      for(const entry of entries) {
+
+      if (isMyPull && pull.requested_reviewers.length == 0 && pull.state === 'open' &&
+        reviews.length === 0) {
+        // My PR does not have a reviewer, and has not had any review activity. I think this
+        // means this is a new PR, without a reviewer, so put it in the inbox
+        myBall = true
+      }
+      for (const entry of entries) {
         const isMyEntry = entry.user.login === gitLogin
         const authorOwnsPull = entry.user.login === pull.user.login
         if (entry.state === CHANGES_REQUESTED) {
