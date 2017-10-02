@@ -36,12 +36,13 @@ How To Use
 
 A PR is considered to be in your inbox if:
 
-This PR is new and you have been requested to be a reviewer
-This PR is yours and someone has reviewed it and requested changes
-You are a reviewer who requested changes and the author of the PR has asked you to take a look again at the PR
-You are the owner and your PR has been approved
-Someone who is not you has used the phrase "PTAL". In particular, if your github login is included in the same message that will cause it to be put in your inbox.
-A PR is considered to be in your outbox in any other situation, as long as you are either the author or have previously contributed to the PR.
+- This PR is new and you have been requested to be a reviewer
+- This PR is yours and someone has reviewed it and requested changes
+- This PR is yours but you have not yet added a reviewer
+- You are a reviewer who requested changes and the author of the PR has asked you to take a look again at the PR
+- You are the owner and your PR has been approved
+- Someone who is not you has used the phrase "PTAL". In particular, if your github login is included in the same message that will cause it to be put in your inbox.
+- A PR is considered to be in your outbox in any other situation, as long as you are either the author or have previously contributed to the PR.
 
 But how does it work?
 We make a call to the organization to get all the repos for that org. Then we get all open pulls for each repo. Then we fetch all of the reviews and comments for each PR and build a chronological list of events for each PR. The logic above is applied sequentially to each entry in this list, and whoever ends the walkthrough with responsibility has the pull put in their inbox.
