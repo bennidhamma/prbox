@@ -49,6 +49,7 @@ const loadData = () => {
 const OPEN = 'OPEN'
 const CHANGES_REQUESTED = 'CHANGES_REQUESTED'
 const APPROVED = 'APPROVED'
+const COMMENTED = 'COMMENTED'
 
 const routePull = pull => {
   if (pull.requested_reviewers.some(r => r.login === gitLogin)) {
@@ -61,7 +62,10 @@ const routePull = pull => {
   getReviews(pull).then(reviews => {
     console.log(pull.url, 'reviews', reviews)
     getComments(pull).then(comments => {
+      // TODO: These comments are just the main PR comments, not specific commit comments. It would
+      // be nice to get those comments as well.
       console.log(pull.url, 'comments', comments)
+
       let entries = [...reviews, ...comments]
         .sort((a, b) => new Date(a.submitted_at || a.updated_at) >
           new Date(b.submitted_at || b.updated_at))
@@ -102,6 +106,8 @@ const routePull = pull => {
           iAmOnPull |= isMyEntry
           myBall = isMyPull && !isMyEntry
           theirBall = !isMyPull && isMyEntry
+        } else if (entry.state === COMMENTED) {
+          iAmOnPull |= isMyEntry
         }
       }
       if (myBall) {
