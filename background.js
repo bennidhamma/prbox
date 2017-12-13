@@ -51,6 +51,14 @@ const CHANGES_REQUESTED = 'CHANGES_REQUESTED'
 const APPROVED = 'APPROVED'
 const COMMENTED = 'COMMENTED'
 
+function mapToObject (map) {
+  const object = {}
+  for (let [name, value] of map) {
+    object[name] = value
+  }
+  return object
+}
+
 const routePull = pull => {
   if (pull.requested_reviewers.some(r => r.login === gitLogin)) {
     // I am a reviewer on this PR. I *think* we may be able to just call it here and put it in
@@ -73,6 +81,7 @@ const routePull = pull => {
       let myBall = false, theirBall = isMyPull
       let currentState = OPEN
       let iAmOnPull = false
+      let reviewers = new Map()
 
       if (isMyPull && pull.requested_reviewers.length == 0 && pull.state === 'open' &&
         reviews.length === 0) {
@@ -83,6 +92,9 @@ const routePull = pull => {
       for (const entry of entries) {
         const isMyEntry = entry.user.login === gitLogin
         const authorOwnsPull = entry.user.login === pull.user.login
+        if (entry.user.login !== pull.user.login) {
+          reviewers.set(entry.user.login, entry.user)
+        }
         if (entry.state === CHANGES_REQUESTED) {
           iAmOnPull |= isMyEntry
           if (isMyPull) {
@@ -110,6 +122,7 @@ const routePull = pull => {
           iAmOnPull |= isMyEntry
         }
       }
+      pull.reviewers = mapToObject(reviewers)
       if (myBall) {
         data.inbox.push(pull)
       } else if (theirBall) {
