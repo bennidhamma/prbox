@@ -41,9 +41,19 @@ document.addEventListener('DOMContentLoaded', function() {
   })
 })
 
-document.addEventListener('click', e => {
+function openPR(e) {
   if (e.target.localName === 'a') {
     chrome.tabs.create({url: e.target.href})
+  }
+}
+
+document.addEventListener('click', e => {
+  var el = e.target
+  while (el && el.localName !== 'a') {
+    el = el.parentElement
+  }
+  if (el && el.localName === 'a') {
+    chrome.tabs.create({url: el.href})
   }
 })
 
