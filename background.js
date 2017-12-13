@@ -60,9 +60,12 @@ function mapToObject (map) {
 }
 
 const routePull = pull => {
+  let reviewers = new Map()
+  pull.requested_reviewers.forEach(v => reviewers.set(v.login, v))
   if (pull.requested_reviewers.some(r => r.login === gitLogin)) {
     // I am a reviewer on this PR. I *think* we may be able to just call it here and put it in
     // your inbox, since you disappear from requested_reviewers once you submit a review.
+    pull.reviewers = mapToObject(reviewers)
     data.inbox.push(pull)
     return
   }
@@ -81,7 +84,6 @@ const routePull = pull => {
       let myBall = false, theirBall = isMyPull
       let currentState = OPEN
       let iAmOnPull = false
-      let reviewers = new Map()
 
       if (isMyPull && pull.requested_reviewers.length == 0 && pull.state === 'open' &&
         reviews.length === 0) {

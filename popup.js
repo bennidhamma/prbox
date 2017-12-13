@@ -15,7 +15,7 @@ const renderPull = pull => `<a class="pr-link" href="${pull.html_url}">
     <div class="timeago" datetime="${pull.created_at}">${pull.created_at}</div>
     <div class="info user reviewers">
       <strong>Reviewers:</strong>
-      ${Object.values(pull.reviewers).map(renderUser).join(' ')}
+      ${pull.reviewers ? Object.values(pull.reviewers).map(renderUser).join(' ') : 'None'}
     </div>
   </div>
 </a>`
