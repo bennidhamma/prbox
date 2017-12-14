@@ -23,8 +23,12 @@ const renderPull = pull => `<a class="pr-link" href="${pull.html_url}">
 const render = data => {
   const inbox = document.getElementById('inbox')
   const outbox = document.getElementById('outbox')
-  const inboxHTML = '<h1>Inbox</h1>' + data.inbox.map(renderPull).join('\n')
-  const outboxHTML = '<h1>Outbox</h1>' + data.outbox.map(renderPull).join('\n')
+  const inboxPRs = new Map()
+  const outboxPRs = new Map()
+  data.inbox.forEach(pr => inboxPRs.set(pr.number, pr))
+  data.outbox.forEach(pr => outboxPRs.set(pr.number, pr))
+  const inboxHTML = '<h1>Inbox</h1>' + inboxPRs.values().map(renderPull).join('\n')
+  const outboxHTML = '<h1>Outbox</h1>' + outboxPRs.values().map(renderPull).join('\n')
   inbox.innerHTML = inboxHTML
   outbox.innerHTML = outboxHTML
   timeago().render(document.querySelectorAll('.timeago'))
