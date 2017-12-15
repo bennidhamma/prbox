@@ -27,8 +27,8 @@ const render = data => {
   const outboxPRs = new Map()
   data.inbox.forEach(pr => inboxPRs.set(pr.number, pr))
   data.outbox.forEach(pr => outboxPRs.set(pr.number, pr))
-  const inboxHTML = '<h1>Inbox</h1>' + inboxPRs.values().map(renderPull).join('\n')
-  const outboxHTML = '<h1>Outbox</h1>' + outboxPRs.values().map(renderPull).join('\n')
+  const inboxHTML = '<h1>Inbox</h1>' + [...inboxPRs.values()].map(renderPull).join('\n')
+  const outboxHTML = '<h1>Outbox</h1>' + [...outboxPRs.values()].map(renderPull).join('\n')
   inbox.innerHTML = inboxHTML
   outbox.innerHTML = outboxHTML
   timeago().render(document.querySelectorAll('.timeago'))
