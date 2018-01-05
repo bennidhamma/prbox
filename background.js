@@ -49,11 +49,23 @@ const loadData = () => {
 const OPEN = 'OPEN'
 const CHANGES_REQUESTED = 'CHANGES_REQUESTED'
 const APPROVED = 'APPROVED'
+const COMMENTED = 'COMMENTED'
+
+function mapToObject (map) {
+  const object = {}
+  for (let [name, value] of map) {
+    object[name] = value
+  }
+  return object
+}
 
 const routePull = pull => {
+  let reviewers = new Map()
+  pull.requested_reviewers.forEach(v => reviewers.set(v.login, v))
   if (pull.requested_reviewers.some(r => r.login === gitLogin)) {
     // I am a reviewer on this PR. I *think* we may be able to just call it here and put it in
     // your inbox, since you disappear from requested_reviewers once you submit a review.
+    pull.reviewers = mapToObject(reviewers)
     data.inbox.push(pull)
     return
   }
@@ -61,7 +73,10 @@ const routePull = pull => {
   getReviews(pull).then(reviews => {
     console.log(pull.url, 'reviews', reviews)
     getComments(pull).then(comments => {
+      // TODO: These comments are just the main PR comments, not specific commit comments. It would
+      // be nice to get those comments as well.
       console.log(pull.url, 'comments', comments)
+
       let entries = [...reviews, ...comments]
         .sort((a, b) => new Date(a.submitted_at || a.updated_at) >
           new Date(b.submitted_at || b.updated_at))
@@ -69,12 +84,26 @@ const routePull = pull => {
       let myBall = false, theirBall = isMyPull
       let currentState = OPEN
       let iAmOnPull = false
-      for(const entry of entries) {
+
+      if (isMyPull && pull.requested_reviewers.length == 0 && pull.state === 'open' &&
+        reviews.length === 0) {
+        // My PR does not have a reviewer, and has not had any review activity. I think this
+        // means this is a new PR, without a reviewer, so put it in the inbox
+        myBall = true
+      }
+      for (const entry of entries) {
         const isMyEntry = entry.user.login === gitLogin
         const authorOwnsPull = entry.user.login === pull.user.login
+        if (entry.user.login !== pull.user.login) {
+          reviewers.set(entry.user.login, entry.user)
+        }
         if (entry.state === CHANGES_REQUESTED) {
           iAmOnPull |= isMyEntry
-          myBall = isMyPull
+          if (isMyPull) {
+            myBall = true
+          } else if (isMyEntry) {
+            myBall = false
+          }
           theirBall = isMyEntry
           currentState = CHANGES_REQUESTED
         } else if (entry.state === APPROVED) {
@@ -91,15 +120,17 @@ const routePull = pull => {
           iAmOnPull |= isMyEntry
           myBall = isMyPull && !isMyEntry
           theirBall = !isMyPull && isMyEntry
+        } else if (entry.state === COMMENTED) {
+          iAmOnPull |= isMyEntry
         }
       }
+      pull.reviewers = mapToObject(reviewers)
       if (myBall) {
         data.inbox.push(pull)
-        update()
       } else if (theirBall) {
         data.outbox.push(pull)
-        update()
       }
+      update()
     })
   })
 }
@@ -107,7 +138,7 @@ const routePull = pull => {
 const update = () => {
   chrome.storage.local.set({ data })
   if (chrome.browserAction) {
-    chrome.browserAction.setBadgeText({text: data.inbox.length ? '' + data.inbox.length : null})
+    chrome.browserAction.setBadgeText({text: data.inbox.length ? '' + data.inbox.length : ''})
   }
   chrome.runtime.sendMessage({cmd: 'render', data})
 }

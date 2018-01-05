@@ -8,10 +8,18 @@
   <head>
     <title>PRBox</title>
     <style>
+      h1 {
+        font-size: 18px;
+        margin: 10px 0;
+        background: #888;
+        color: white;
+        padding: 8px;
+      }
       body {
-        font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
+        font-family: "Roboto", "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
         font-size: 100%;
         width: 600px;
+        margin: 0;
       }
       #status {
         /* avoid an excessively wide status text */
@@ -20,10 +28,52 @@
         overflow: hidden;
         max-width: 400px;
       }
+      .timeago {
+        grid-column: 3 / 4;
+        font-size: 14px;
+        color: #777;
+      }
+      .author {
+        grid-column: 1 / 2;
+      }
+      .reviewers {
+        grid-column: 1 / 4;
+      }
       .pr {
-        padding-bottom: 15px;
-        margin-bottom: 15px;
+        display: grid;
+        grid-gap: 10px;
+        grid-template-columns: 1fr 1fr 1fr;
+        padding: 15px;
         border-bottom: 1px solid #eee;
+      }
+      .pr header {
+        grid-column: 1 / 4;
+        font-size: 15px;
+        font-weight: bold;
+      }
+
+      .user strong {
+        font-size: 14px;
+      }
+
+      .info {
+        display: flex;
+        align-items: baseline;
+      }
+      .info > * {
+        line-height: 22px;
+        font-size: 14px;
+        vertical-align: top;
+        padding-right: 10px;
+      }
+      .user img{
+        width: 20px;
+        height: 20px;
+      }
+
+      a.pr-link {
+        text-decoration: none;
+        color: inherit;
       }
     </style>
 
@@ -33,6 +83,7 @@
       -
       - [1]: https://developer.chrome.com/extensions/contentSecurityPolicy
      -->
+    <script src="timeago.js" type="text/javascript"></script>
     <script src="popup.js"></script>
   </head>
   <body>
