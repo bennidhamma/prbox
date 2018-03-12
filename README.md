@@ -28,7 +28,8 @@ Enter your github login, username, and a github personal access token :
 
 https://s3-us-west-2.amazonaws.com/maven-user-photos/viewfromthepeak/pages/VnDOi\_UY5kahZ1fKz-1dAA/DMuRDSmrQkS\_GEg45jXGDg
 
-mode_edit
+The scopes you'll need are repo, notifications, and user.
+
 And you should be good to go!
 
 How To Use
