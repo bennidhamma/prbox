@@ -8,7 +8,8 @@ const renderUser = user => `<span>${renderAvatar(user)} ${user.login}</span>`
 
 const renderPull = pull => `<a class="pr-link" href="${pull.html_url}">
   <div class="pr">
-    <header>${pull.head.repo.name} #${pull.number} - ${pull.title}</header>
+    <header><big>#${pull.number}</big> - ${pull.title}</header>
+    <div class="info repo"><strong>Repo:</strong>${pull.head.repo.name}</div>
     <div class="info user author">
       <strong>Author:</strong>${renderUser(pull.user)}
     </div>
