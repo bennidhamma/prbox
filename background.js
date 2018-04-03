@@ -113,7 +113,7 @@ const routePull = pull => {
           currentState = APPROVED
         } else if (entry.body.toLowerCase().includes('ptal')) {
           iAmOnPull |= isMyEntry
-          myBall = (iAmOnPull && !isMyEntry && (isMyPull || authorOwnsPull)) ||
+          myBall = (!isMyEntry && (iAmOnPull || isMyPull || authorOwnsPull)) ||
             entry.body.toLowerCase().includes(gitLogin)
           theirBall = isMyEntry
         } else if (entry.body.toLowerCase().includes('lgtm')) {
