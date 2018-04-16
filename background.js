@@ -92,6 +92,7 @@ const routePull = pull => {
         myBall = true
       }
       for (const entry of entries) {
+        body = entry.body.replace(/^>.*$/mg, '').toLowerCase()
         const isMyEntry = entry.user.login === gitLogin
         const authorOwnsPull = entry.user.login === pull.user.login
         if (entry.user.login !== pull.user.login) {
@@ -111,10 +112,10 @@ const routePull = pull => {
           myBall = isMyPull
           theirBall = isMyEntry
           currentState = APPROVED
-        } else if (entry.body.toLowerCase().includes('ptal')) {
+        } else if (body.includes('ptal')) {
           iAmOnPull |= isMyEntry
-          if (entry.body.includes('ptal @')) {
-            myBall = entry.body.toLowerCase().includes(gitLogin)
+          if (body.includes('ptal @')) {
+            myBall = body.includes(gitLogin)
           }
           else {
             // PTAL: if the current entry author owns the PR, and their is no specific
@@ -132,7 +133,7 @@ const routePull = pull => {
             }
           }
           theirBall = iAmOnPull && !myBall && isMyEntry
-        } else if (entry.body.toLowerCase().includes('lgtm')) {
+        } else if (body.includes('lgtm')) {
           iAmOnPull |= isMyEntry
           myBall = isMyPull && !isMyEntry
           theirBall = !isMyPull && isMyEntry
