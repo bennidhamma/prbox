@@ -83,7 +83,7 @@ const routePull = pull => {
       console.log(pull.url, 'entries', entries)
       let myBall = false, theirBall = isMyPull
       let currentState = OPEN
-      let iAmOnPull = false
+      let iAmOnPull = reviewers.has(gitLogin) || isMyPull
 
       if (isMyPull && pull.requested_reviewers.length == 0 && pull.state === 'open' &&
         reviews.length === 0) {
@@ -113,9 +113,25 @@ const routePull = pull => {
           currentState = APPROVED
         } else if (entry.body.toLowerCase().includes('ptal')) {
           iAmOnPull |= isMyEntry
-          myBall = (!isMyEntry && (iAmOnPull || isMyPull || authorOwnsPull)) ||
-            entry.body.toLowerCase().includes(gitLogin)
-          theirBall = isMyEntry
+          if (entry.body.includes('ptal @')) {
+            myBall = entry.body.toLowerCase().includes(gitLogin)
+          }
+          else {
+            // PTAL: if the current entry author owns the PR, and their is no specific
+            // at mention, then everyone else on the pr should get the ball.
+            // if the current entry author is not the pr owner, then only the author should
+            // get the ball (if their is no  mention)
+            if (isMyEntry || !iAmOnPull) {
+              myBall = false
+            } else if (authorOwnsPull) {
+              myBall = true
+            } else if (!authorOwnsPull && isMyPull) {
+              myBall = true
+            } else {
+              myBall = false
+            }
+          }
+          theirBall = iAmOnPull && !myBall && isMyEntry
         } else if (entry.body.toLowerCase().includes('lgtm')) {
           iAmOnPull |= isMyEntry
           myBall = isMyPull && !isMyEntry
