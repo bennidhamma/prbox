@@ -137,8 +137,9 @@ const routePull = pull => {
           iAmOnPull |= isMyEntry
           myBall = isMyPull && !isMyEntry
           theirBall = !isMyPull && isMyEntry
-        } else if (entry.state === COMMENTED) {
-          iAmOnPull |= isMyEntry
+        } else if (entry.state === COMMENTED || !entry.state) {
+           iAmOnPull |= isMyEntry
+           myBall |= body.includes('@' + gitLogin)
         }
       }
       pull.reviewers = mapToObject(reviewers)
