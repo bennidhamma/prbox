@@ -49,6 +49,7 @@ const loadData = () => {
 const OPEN = 'OPEN'
 const CHANGES_REQUESTED = 'CHANGES_REQUESTED'
 const APPROVED = 'APPROVED'
+const DISMISSED = 'DISMISSED'
 const COMMENTED = 'COMMENTED'
 
 function mapToObject (map) {
@@ -78,11 +79,10 @@ const routePull = pull => {
       console.log(pull.url, 'comments', comments)
 
       let entries = [...reviews, ...comments]
-        .sort((a, b) => new Date(a.submitted_at || a.updated_at) >
+        .sort((a, b) => new Date(a.submitted_at || a.updated_at) -
           new Date(b.submitted_at || b.updated_at))
       console.log(pull.url, 'entries', entries)
       let myBall = false, theirBall = isMyPull
-      let currentState = OPEN
       let iAmOnPull = reviewers.has(gitLogin) || isMyPull
 
       if (isMyPull && pull.requested_reviewers.length == 0 && pull.state === 'open' &&
@@ -106,12 +106,13 @@ const routePull = pull => {
             myBall = false
           }
           theirBall = isMyEntry
-          currentState = CHANGES_REQUESTED
+        } else if (entry.state === DISMISSED) {
+          myBall = isMyEntry
+          theirBall = !isMyEntry
         } else if (entry.state === APPROVED) {
           iAmOnPull |= isMyEntry
           myBall = isMyPull
           theirBall = isMyEntry
-          currentState = APPROVED
         } else if (body.includes('ptal')) {
           iAmOnPull |= isMyEntry
           if (body.includes('ptal @')) {
