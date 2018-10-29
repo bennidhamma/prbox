@@ -2,9 +2,30 @@ function renderStatus(statusText) {
   document.getElementById('status').textContent = statusText
 }
 
+const compareUsers = (a, b) => {
+  if (a.login < b.login) {
+    return -1
+  }
+  if (a.login > b.login) {
+    return 1
+  }
+  return 0
+}
+
+const comparePrs = (a, b) => {
+  return new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at)
+}
+
 const renderAvatar = user => `<img src="https://avatars0.githubusercontent.com/u/${user.id}?s=40&v=4">`
 
 const renderUser = user => `<span>${renderAvatar(user)} ${user.login}</span>`
+
+const renderUpdated = pull => {
+  if (pull.created_at === pull.updated_at) {
+    return ''
+  }
+  return `,<br/>updated<span class="timeago" datetime="${pull.updated_at}">${pull.updated_at}</span>`
+}
 
 const renderPull = pull => `<a class="pr-link" href="${pull.html_url}">
   <div class="pr">
@@ -13,10 +34,12 @@ const renderPull = pull => `<a class="pr-link" href="${pull.html_url}">
     <div class="info user author">
       <strong>Author:</strong>${renderUser(pull.user)}
     </div>
-    <div class="timeago" datetime="${pull.created_at}">${pull.created_at}</div>
+    <div class="times">
+      Opened<span class="timeago" datetime="${pull.created_at}">${pull.created_at}</span>${renderUpdated(pull)}
+    </div>
     <div class="info user reviewers">
       <strong>Reviewers:</strong>
-      ${pull.reviewers ? Object.values(pull.reviewers).map(renderUser).join(' ') : 'None'}
+      ${pull.reviewers ? Object.values(pull.reviewers).sort(compareUsers).map(renderUser).join(' ') : 'None'}
     </div>
   </div>
 </a>`
@@ -26,10 +49,13 @@ const render = data => {
   const outbox = document.getElementById('outbox')
   const inboxPRs = new Map()
   const outboxPRs = new Map()
+
   data.inbox.forEach(pr => inboxPRs.set(pr.number, pr))
   data.outbox.forEach(pr => outboxPRs.set(pr.number, pr))
-  const inboxHTML = '<h1>Inbox</h1>' + [...inboxPRs.values()].map(renderPull).join('\n')
-  const outboxHTML = '<h1>Outbox</h1>' + [...outboxPRs.values()].map(renderPull).join('\n')
+  const sortedInbox = [...inboxPRs.values()].sort(comparePrs)
+  const sortedOutbox = [...outboxPRs.values()].sort(comparePrs)
+  const inboxHTML = '<h1>Inbox</h1>' + sortedInbox.map(renderPull).join('\n')
+  const outboxHTML = '<h1>Outbox</h1>' + sortedOutbox.map(renderPull).join('\n')
   inbox.innerHTML = inboxHTML
   outbox.innerHTML = outboxHTML
   timeago().render(document.querySelectorAll('.timeago'))
