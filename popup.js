@@ -16,6 +16,41 @@ const comparePrs = (a, b) => {
   return new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at)
 }
 
+const dateComparer = (a, b) => b.date - a.date
+
+const groupAndSortPrs = (prs) => {
+  // first group
+  var r = /\d+/
+  var groups = {}
+  for(var i = 0; i < prs.length; i++) {
+    var pr = prs[i]
+    var search = r.exec(pr.title)
+    if (!search) {
+      continue
+    }
+    pr.ticketNum = ~~search[0]
+    pr.date = new Date(pr.updated_at || pr.created_at)
+    if (!groups[pr.ticketNum]) {
+      groups[pr.ticketNum] = {
+        date: pr.date,
+        prs: []
+      }
+    }
+    var g = groups[pr.ticketNum]
+    g.prs.push(pr)
+    if (g.date < pr.date) {
+      g.date = pr.date
+    }
+  }
+  var sortedGroups = Object.values(groups).sort(dateComparer)
+  var flattened = []
+  for (let g of sortedGroups) {
+    var sortedPrs = g.prs.sort(dateComparer)
+    flattened = [...flattened, ...sortedPrs]
+  }
+  return flattened
+}
+
 const renderAvatar = user => `<img src="https://avatars0.githubusercontent.com/u/${user.id}?s=40&v=4">`
 
 const renderUser = user => `<span>${renderAvatar(user)} ${user.login}</span>`
@@ -52,8 +87,8 @@ const render = data => {
 
   data.inbox.forEach(pr => inboxPRs.set(pr.number, pr))
   data.outbox.forEach(pr => outboxPRs.set(pr.number, pr))
-  const sortedInbox = [...inboxPRs.values()].sort(comparePrs)
-  const sortedOutbox = [...outboxPRs.values()].sort(comparePrs)
+  const sortedInbox = groupAndSortPrs([...inboxPRs.values()])
+  const sortedOutbox = groupAndSortPrs([...outboxPRs.values()])
   const inboxHTML = '<h1>Inbox</h1>' + sortedInbox.map(renderPull).join('\n')
   const outboxHTML = '<h1>Outbox</h1>' + sortedOutbox.map(renderPull).join('\n')
   inbox.innerHTML = inboxHTML
