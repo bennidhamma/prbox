@@ -22,10 +22,12 @@ const groupAndSortPrs = (prs) => {
   // first group
   var r = /\d+/
   var groups = {}
+  var flattened = []
   for(var i = 0; i < prs.length; i++) {
     var pr = prs[i]
     var search = r.exec(pr.title)
     if (!search) {
+      flattened.push(pr)
       continue
     }
     pr.ticketNum = ~~search[0]
@@ -43,7 +45,6 @@ const groupAndSortPrs = (prs) => {
     }
   }
   var sortedGroups = Object.values(groups).sort(dateComparer)
-  var flattened = []
   for (let g of sortedGroups) {
     var sortedPrs = g.prs.sort(dateComparer)
     flattened = [...flattened, ...sortedPrs]
