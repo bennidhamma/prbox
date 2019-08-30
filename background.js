@@ -2,7 +2,7 @@ let accessToken = ''
 let gitLogin = ''
 let githubOrg = ''
 const api = url => `https://api.github.com/${url}`
-const call = (url, qs) => fetch(`${url}?access_token=${accessToken}${qs ? '&' + qs : ''}`)
+const call = (url, qs) => fetch(`${url}?per_page=100&access_token=${accessToken}${qs ? '&' + qs : ''}`)
   .then(r => r.json())
 
 const getRepos = () => call(api(`orgs/${githubOrg}/repos`))
