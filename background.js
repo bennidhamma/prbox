@@ -14,6 +14,8 @@ const getReviews = pull => call(`${pull.url}/reviews`)
 const getComments = pull => call(`${pull.comments_url}`,
   'per_page=50&sort=created&direction=desc')
 
+const getPullDetail = pull => call(pull.url)
+
 let data = {
   repos: [],
   inbox: [],
@@ -67,7 +69,7 @@ const routePull = pull => {
     // I am a reviewer on this PR. I *think* we may be able to just call it here and put it in
     // your inbox, since you disappear from requested_reviewers once you submit a review.
     pull.reviewers = mapToObject(reviewers)
-    data.inbox.push(pull)
+    addPullToInbox(pull)
     return
   }
   const isMyPull = pull.user.login === gitLogin
@@ -145,13 +147,19 @@ const routePull = pull => {
       }
       pull.reviewers = mapToObject(reviewers)
       if (myBall) {
-        data.inbox.push(pull)
+        addPullToInbox(pull)
       } else if (theirBall) {
         data.outbox.push(pull)
       }
       update()
     })
   })
+}
+
+const addPullToInbox = async pull => {
+  var pullDetails = await getPullDetail(pull)
+  pull.lines = pullDetails.additions + pullDetails.deletions
+  data.inbox.push(pull)
 }
 
 const update = () => {

@@ -66,7 +66,12 @@ const renderUpdated = pull => {
 const renderPull = pull => `<a class="pr-link" href="${pull.html_url}">
   <div class="pr">
     <header><big>#${pull.number}</big> - ${pull.title}</header>
-    <div class="info repo"><strong>Repo:</strong>${pull.head.repo.name}</div>
+    <div class="info repo">
+      <strong>Repo:</strong>${pull.head.repo.name}
+    </div>
+    <div class="info lines">
+      <strong># lines:</strong>${pull.lines}
+    </div>
     <div class="info user author">
       <strong>Author:</strong>${renderUser(pull.user)}
     </div>
