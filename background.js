@@ -75,7 +75,7 @@ const routePull = pull => {
   const isMyPull = pull.user.login === gitLogin
   getReviews(pull).then(reviews => {
     console.log(pull.url, 'reviews', reviews)
-    getComments(pull).then(comments => {
+    getComments(pull).then(async comments => {
       // TODO: These comments are just the main PR comments, not specific commit comments. It would
       // be nice to get those comments as well.
       console.log(pull.url, 'comments', comments)
@@ -96,7 +96,7 @@ const routePull = pull => {
       for (const entry of entries) {
         body = entry.body.replace(/^>.*$/mg, '').toLowerCase()
         const isMyEntry = entry.user.login === gitLogin
-        const authorOwnsPull = entry.user.login === pull.user.login
+        const isAuthorEntry = entry.user.login === pull.user.login
         if (entry.user.login !== pull.user.login) {
           reviewers.set(entry.user.login, entry.user)
         }
@@ -127,9 +127,9 @@ const routePull = pull => {
             // get the ball (if their is no  mention)
             if (isMyEntry || !iAmOnPull) {
               myBall = false
-            } else if (authorOwnsPull) {
+            } else if (isAuthorEntry) {
               myBall = true
-            } else if (!authorOwnsPull && isMyPull) {
+            } else if (!isAuthorEntry && isMyPull) {
               myBall = true
             } else {
               myBall = false
@@ -147,7 +147,7 @@ const routePull = pull => {
       }
       pull.reviewers = mapToObject(reviewers)
       if (myBall) {
-        addPullToInbox(pull)
+        await addPullToInbox(pull)
       } else if (theirBall) {
         data.outbox.push(pull)
       }
