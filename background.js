@@ -125,7 +125,7 @@ const routePull = pull => {
             // at mention, then everyone else on the pr should get the ball.
             // if the current entry author is not the pr owner, then only the author should
             // get the ball (if their is no  mention)
-            if (isMyEntry || !iAmOnPull) {
+            if (isMyEntry || !reviewers.has(gitLogin)) {
               myBall = false
             } else if (authorOwnsPull) {
               myBall = true
@@ -146,12 +146,14 @@ const routePull = pull => {
         }
       }
       pull.reviewers = mapToObject(reviewers)
+      var doUpdate = false
       if (myBall) {
         addPullToInbox(pull)
       } else if (theirBall) {
         data.outbox.push(pull)
+        doUpdate = true
       }
-      update()
+      doUpdate && update()
     })
   })
 }
@@ -160,6 +162,7 @@ const addPullToInbox = async pull => {
   var pullDetails = await getPullDetail(pull)
   pull.lines = pullDetails.additions + pullDetails.deletions
   data.inbox.push(pull)
+  update()
 }
 
 const update = () => {
