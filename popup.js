@@ -69,9 +69,10 @@ const renderPull = pull => `<a class="pr-link" href="${pull.html_url}">
     <div class="info repo">
       <strong>Repo:</strong>${pull.head.repo.name}
     </div>
+    ${pull.lines ? `
     <div class="info lines">
       <strong># lines:</strong>${pull.lines}
-    </div>
+    </div>` : ''}
     <div class="info user author">
       <strong>Author:</strong>${renderUser(pull.user)}
     </div>
