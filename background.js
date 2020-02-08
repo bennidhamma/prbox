@@ -2,10 +2,10 @@ let accessToken = ''
 let gitLogin = ''
 let githubOrg = ''
 const api = url => `https://api.github.com/${url}`
-const call = (url, qs) => fetch(`${url}?per_page=100&access_token=${accessToken}${qs ? '&' + qs : ''}`)
+const call = (url, qs, page = 1) => fetch(`${url}?per_page=100&page=${page}&access_token=${accessToken}${qs ? '&' + qs : ''}`)
   .then(r => r.json())
 
-const getRepos = () => call(api(`orgs/${githubOrg}/repos`))
+const getRepos = page => call(api(`orgs/${githubOrg}/repos`), null, page)
 
 const getPulls = repoName => call(api(`repos/${githubOrg}/${repoName}/pulls`))
 
@@ -36,15 +36,17 @@ const loadData = () => {
     accessToken = config.accessToken
     gitLogin = config.login
     githubOrg = config.githubOrg
-    getRepos().then(repos => {
-      for (let repo of repos) {
-        data.repos.push(repo)
-        getPulls(repo.name).then(pulls => {
-          repo.pulls = pulls
-          pulls.forEach(routePull)
+      for (var i = 1; i < 5; i++) {
+        getRepos(i).then(repos => {
+          for (let repo of repos) {
+            data.repos.push(repo)
+            getPulls(repo.name).then(pulls => {
+              repo.pulls = pulls
+              pulls.forEach(routePull)
+            })
+          }
         })
       }
-    })
   })
 }
 
