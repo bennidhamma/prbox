@@ -23,6 +23,7 @@ let data = {
 }
 
 const loadData = () => {
+  update()
   data = {
     repos: [],
     inbox: [],
