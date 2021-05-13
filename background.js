@@ -23,12 +23,12 @@ let data = {
 }
 
 const loadData = () => {
-  update()
   data = {
     repos: [],
     inbox: [],
     outbox: [],
   }
+  update()
   chrome.storage.sync.get({
     login: '',
     accessToken: '',
