@@ -3,10 +3,12 @@ function save_options() {
   var login = document.getElementById('login').value;
   var accessToken = document.getElementById('accessToken').value;
   var githubOrg = document.getElementById('githubOrg').value;
+  var repos = document.getElementById('repos').value.split(',');
   chrome.storage.sync.set({
     login,
     accessToken,
     githubOrg,
+    repos
   }, function() {
     // Update status to let user know options were saved.
     var status = document.getElementById('status');
@@ -24,11 +26,13 @@ function restore_options() {
   chrome.storage.sync.get({
     login: '',
     accessToken: '',
-    githubOrg: ''
+    githubOrg: '',
+    repos: []
   }, function(items) {
     document.getElementById('login').value = items.login;
     document.getElementById('accessToken').value = items.accessToken;
     document.getElementById('githubOrg').value = items.githubOrg;
+    document.getElementById('repos').value = items.repos;
   });
 }
 document.addEventListener('DOMContentLoaded', restore_options);

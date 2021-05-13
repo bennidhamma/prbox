@@ -31,22 +31,29 @@ const loadData = () => {
   chrome.storage.sync.get({
     login: '',
     accessToken: '',
-    githubOrg: ''
+    githubOrg: '',
+    repos: []
   }, function(config) {
     accessToken = config.accessToken
     gitLogin = config.login
     githubOrg = config.githubOrg
+    repos = config.repos.map(n => ({name: n}))
+    if (repos.length === 0) {
       for (var i = 1; i < 5; i++) {
         getRepos(i).then(repos => {
-          for (let repo of repos) {
-            data.repos.push(repo)
-            getPulls(repo.name).then(pulls => {
-              repo.pulls = pulls
-              pulls.forEach(routePull)
-            })
-          }
+          console.log('repos: ', repos)
+          if (repos.message === 'Not Found')
+            return
         })
       }
+    }
+    for (let repo of repos) {
+      data.repos.push(repo)
+      getPulls(repo.name).then(pulls => {
+        repo.pulls = pulls
+        pulls.forEach(routePull)
+      })
+    }
   })
 }
 

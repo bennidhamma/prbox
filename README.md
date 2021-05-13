@@ -12,9 +12,13 @@ Once that is done, click "Load unpacked extension"
 
 Now, navigate to your prbox directory you just cloned from git
 
-Now, to configure, click options
+Now, to configure, click Details, then scroll down to 'extension options'
 
-Enter your github login, username, and a github personal access token
+Enter the details, such as:
+  * username 
+  * a github personal access token
+  * github org
+  * some repos (comma delimited)
 
 The scopes you'll need are repo, notifications, and user.
 
