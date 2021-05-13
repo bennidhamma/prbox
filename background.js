@@ -2,7 +2,12 @@ let accessToken = ''
 let gitLogin = ''
 let githubOrg = ''
 const api = url => `https://api.github.com/${url}`
-const call = (url, qs, page = 1) => fetch(`${url}?per_page=100&page=${page}&access_token=${accessToken}${qs ? '&' + qs : ''}`)
+const call = (url, qs, page = 1) =>
+  fetch(`${url}?per_page=100&page=${page}${qs ? '&' + qs : ''}`, {
+    headers: new Headers({
+      'Authorization': 'token ' + accessToken
+    })
+  })
   .then(r => r.json())
 
 const getRepos = page => call(api(`orgs/${githubOrg}/repos`), null, page)
@@ -120,7 +125,7 @@ const routePull = pull => {
           theirBall = isMyEntry
         } else if (entry.state === DISMISSED) {
           myBall = isMyEntry
-          theirBall = !isMyEntry
+          theirBall = iAmOnPull && !isMyEntry
         } else if (entry.state === APPROVED) {
           iAmOnPull |= isMyEntry
           myBall = isMyPull
