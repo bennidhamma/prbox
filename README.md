@@ -1,39 +1,26 @@
 In the olden days, our team had a simple little tool to give us all the ability to easily stay on top of pull requests, from the convenience of a little chrome extension. Now, once more, we can have that peace of mind with github.
 The tool is called PRbox, and you can find it on github at https://github.com/bennidhamma/prbox
 
-Installation
+## Installation ##
 First, clone it:
 
 $ git clone https://github.com/bennidhamma/prbox
 
 Second, open up your chrome extensions and ensure developer mode is clicked:
 
-https://s3-us-west-2.amazonaws.com/maven-user-photos/viewfromthepeak/pages/VnDOi\_UY5kahZ1fKz-1dAA/TRVqKCre6E-rkY3YOU4HQQ
-
 Once that is done, click "Load unpacked extension":
-
-https://s3-us-west-2.amazonaws.com/maven-user-photos/viewfromthepeak/pages/VnDOi\_UY5kahZ1fKz-1dAA/zMME6d0qlkutT0CgNSufsQ
 
 Now, navigate to your prbox directory you just cloned from git:
 
-https://s3-us-west-2.amazonaws.com/maven-user-photos/viewfromthepeak/pages/VnDOi\_UY5kahZ1fKz-1dAA/zbtndGu28ECUMjIUAj2-uQ
-
-
 Now, to configure, click options:
 
-https://s3-us-west-2.amazonaws.com/maven-user-photos/viewfromthepeak/pages/VnDOi\_UY5kahZ1fKz-1dAA/LUrNKATX2EiBxw4-6gpHPw
-
-
 Enter your github login, username, and a github personal access token :
-
-https://s3-us-west-2.amazonaws.com/maven-user-photos/viewfromthepeak/pages/VnDOi\_UY5kahZ1fKz-1dAA/DMuRDSmrQkS\_GEg45jXGDg
 
 The scopes you'll need are repo, notifications, and user.
 
 And you should be good to go!
 
-How To Use
-
+## How To Use ##
 
 A PR is considered to be in your inbox if:
 
