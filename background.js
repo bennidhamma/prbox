@@ -27,13 +27,15 @@ let data = {
   outbox: [],
 }
 
+var needsUpdate = false
+
 const loadData = () => {
   data = {
     repos: [],
     inbox: [],
     outbox: [],
   }
-  update()
+  needsUpdate = true
   chrome.storage.sync.get({
     login: '',
     accessToken: '',
@@ -58,7 +60,7 @@ const loadData = () => {
       getPulls(repo.name).then(pulls => {
         repo.pulls = pulls
         pulls.forEach(routePull)
-      })
+      }).then(() => setTimeout(() => needsUpdate && update(), 4000))
     }
   })
 }
@@ -181,6 +183,7 @@ const addPullToInbox = async pull => {
 }
 
 const update = () => {
+  needsUpdate = false
   chrome.storage.local.set({ data })
   if (chrome.browserAction) {
     chrome.browserAction.setBadgeText({text: data.inbox.length ? '' + data.inbox.length : ''})
