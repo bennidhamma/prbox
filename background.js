@@ -114,11 +114,11 @@ const routePull = pull => {
         body = entry.body.replace(/^>.*$/mg, '').toLowerCase()
         const isMyEntry = entry.user.login === gitLogin
         const isAuthorEntry = entry.user.login === pull.user.login
+        iAmOnPull |= isMyEntry
         if (entry.user.login !== pull.user.login) {
           reviewers.set(entry.user.login, entry.user)
         }
         if (entry.state === CHANGES_REQUESTED) {
-          iAmOnPull |= isMyEntry
           if (isMyPull) {
             myBall = true
           } else if (isMyEntry) {
@@ -129,11 +129,9 @@ const routePull = pull => {
           myBall = isMyEntry
           theirBall = iAmOnPull && !isMyEntry
         } else if (entry.state === APPROVED) {
-          iAmOnPull |= isMyEntry
           myBall = isMyPull
           theirBall = isMyEntry
         } else if (body.includes('ptal')) {
-          iAmOnPull |= isMyEntry
           if (body.includes('ptal @')) {
             myBall = body.includes(gitLogin)
           }
@@ -142,15 +140,13 @@ const routePull = pull => {
             // at mention, then everyone else on the pr should get the ball.
             // if the current entry author is not the pr owner, then only the author should
             // get the ball (if their is no  mention)
-            myBall = isAuthorEntry ^ isMyPull
+            myBall = iAmOnPull && (isAuthorEntry ^ isMyPull)
           }
           theirBall = iAmOnPull && !myBall && isMyEntry
         } else if (body.includes('lgtm')) {
-          iAmOnPull |= isMyEntry
           myBall = isMyPull && !isMyEntry
           theirBall = !isMyPull && isMyEntry
         } else if (entry.state === COMMENTED || !entry.state) {
-           iAmOnPull |= isMyEntry
            myBall |= body.includes('@' + gitLogin)
         }
       }
