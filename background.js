@@ -142,15 +142,7 @@ const routePull = pull => {
             // at mention, then everyone else on the pr should get the ball.
             // if the current entry author is not the pr owner, then only the author should
             // get the ball (if their is no  mention)
-            if (isMyEntry || !reviewers.has(gitLogin)) {
-              myBall = false
-            } else if (isAuthorEntry) {
-              myBall = true
-            } else if (!isAuthorEntry && isMyPull) {
-              myBall = true
-            } else {
-              myBall = false
-            }
+            myBall = isAuthorEntry ^ isMyPull
           }
           theirBall = iAmOnPull && !myBall && isMyEntry
         } else if (body.includes('lgtm')) {
