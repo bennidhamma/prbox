@@ -132,7 +132,7 @@ const routePull = pull => {
           myBall = isMyPull
           theirBall = isMyEntry
         } else if (body.includes('ptal')) {
-          if (body.includes('ptal @')) {
+          if (body.includes('ptal @') || body.includes(`@${gitLogin} ptal`)) {
             myBall = body.includes(gitLogin)
           }
           else {
